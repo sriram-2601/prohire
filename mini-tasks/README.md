@@ -34,6 +34,22 @@ This directory contains standalone, verifiable solutions for the preparatory min
 
 ## Week 3: Multi-turn Conversation Memory
 
+### **Task 1: Stateless vs Stateful Architecture**
+- **File**: `week3/task1_stateless_vs_stateful.py`
+- **Objective**: Demonstrates how stateless LLM calls lose context and how a memory buffer re-injects conversation turns.
+- **Run command**:
+  ```bash
+  python mini-tasks/week3/task1_stateless_vs_stateful.py
+  ```
+
+### **Task 2: Session IDs & Chat Isolation**
+- **File**: `week3/task2_session_ids_isolation.py`
+- **Objective**: Demonstrates generating unique UUID session IDs, storing isolated chat histories, and supporting a "New Chat" feature.
+- **Run command**:
+  ```bash
+  python mini-tasks/week3/task2_session_ids_isolation.py
+  ```
+
 ### **Task 3: Practice Sending Conversation History to Groq**
 - **File**: `week3/task3_groq_conversation_history.py`
 - **Objective**: Demonstrates maintaining multi-turn context (system, user, assistant messages) and resolving contextual follow-up questions with Groq.
@@ -41,3 +57,13 @@ This directory contains standalone, verifiable solutions for the preparatory min
   ```bash
   python mini-tasks/week3/task3_groq_conversation_history.py [optional_groq_api_key]
   ```
+
+---
+
+## Automated Verification Suite
+
+Run all automated unit tests for the mini-tasks:
+```bash
+pytest mini-tasks/tests/test_mini_tasks.py -v
+```
+

@@ -107,3 +107,4 @@ if __name__ == "__main__":
     cli_model = sys.argv[2] if len(sys.argv) > 2 else None
     result = extract_structured_data(api_key=cli_key, model=cli_model)
     sys.exit(0 if result else 1)
+
