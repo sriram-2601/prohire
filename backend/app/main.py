@@ -28,7 +28,7 @@ app = FastAPI(title="Indigo.ai API", description="AI-powered message analysis an
 # Only the frontends listed in ALLOWED_ORIGINS (backend/.env or Render settings) may call the API.
 app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "DELETE"], allow_headers=["Content-Type"])
 
-DIST_DIR = Path(__file__).resolve().parents[2] / "frontend-react" / "dist"
+DIST_DIR = Path(__file__).resolve().parent / "static"
 
 @app.api_route("/", methods=["GET", "HEAD"])
 def root(request: Request):
