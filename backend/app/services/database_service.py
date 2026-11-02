@@ -119,6 +119,7 @@ def _connect() -> Iterator[_Connection]:
             yield _Connection(raw, postgres=True)
         return
 
+    db_path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(db_path, timeout=10)
     conn.execute("PRAGMA foreign_keys = ON")
     try:
