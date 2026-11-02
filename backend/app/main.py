@@ -30,7 +30,7 @@ app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_credenti
 
 DIST_DIR = Path(__file__).resolve().parents[2] / "frontend-react" / "dist"
 
-@app.get("/")
+@app.api_route("/", methods=["GET", "HEAD"])
 def root(request: Request):
     """Public landing response: confirms the service is up without listing the API."""
     accept = request.headers.get("accept", "")
@@ -38,7 +38,7 @@ def root(request: Request):
         return FileResponse(DIST_DIR / "index.html")
     return {"service": app.title, "status": "running"}
 
-@app.get("/health")
+@app.api_route("/health", methods=["GET", "HEAD"])
 def health_check(response: Response):
     """Cheap check for Render and the frontend: never calls the LLM or returns secrets."""
     database_ok = check_database()
