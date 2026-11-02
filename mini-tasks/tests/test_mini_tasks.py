@@ -10,6 +10,8 @@ MINI_TASKS_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(MINI_TASKS_DIR))
 
 from week1.task2_user_profile_pydantic import UserProfile
+from week1.type_enforcement_vs_regex import SupportTicketSchema
+from week2.task1_prompt_and_intent_workflow import PROMPT_TEMPLATES
 from week3.task2_session_ids_isolation import SessionMemoryStore
 
 
@@ -74,3 +76,26 @@ def test_session_isolation():
     assert len(h2) == 1
     assert h1[0]["content"] == "Message for S1"
     assert h2[0]["content"] == "Message for S2"
+
+
+def test_type_enforcement_handles_markdown_and_coercion():
+    raw_markdown = '```json\n{"category": "Billing", "severity": "HIGH", "order_id": "ORD-1234", "refund_requested": "true"}\n```'
+    parsed = SupportTicketSchema.from_llm_output(raw_markdown)
+    assert parsed.category == "Billing"
+    assert parsed.severity == "high"
+    assert parsed.order_id == 1234
+    assert parsed.refund_requested is True
+
+
+def test_type_enforcement_rejects_hallucinated_severity():
+    raw = '{"category": "Billing", "severity": "MegaSuperUrgent", "order_id": 1234, "refund_requested": false}'
+    with pytest.raises(ValueError) as exc:
+        SupportTicketSchema.from_llm_output(raw)
+    assert "Invalid severity" in str(exc.value)
+
+
+def test_prompt_templates_coverage():
+    assert "order_tracking" in PROMPT_TEMPLATES
+    assert "payment_issue" in PROMPT_TEMPLATES
+    assert "general_question" in PROMPT_TEMPLATES
+
