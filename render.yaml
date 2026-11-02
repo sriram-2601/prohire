@@ -1,14 +1,12 @@
-# Render Blueprint for the FastAPI backend.
-# Render → New → Blueprint → pick this repo. You'll be asked for the values
-# marked "sync: false" (they are secrets or depend on your Vercel URL).
+# Render Unified Full-Stack Blueprint (Frontend + Backend in One Service)
+# Deploys BOTH React UI and FastAPI into a single free public URL.
 services:
   - type: web
-    name: ai-assistant-backend
+    name: prohire-ai-unified
     runtime: python
     plan: free
-    rootDir: backend
-    buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    buildCommand: cd frontend-react && npm install && npm run build && cd ../backend && pip install -r requirements.txt
+    startCommand: cd backend && uvicorn app.main:app --host 0.0.0.0 --port $PORT
     healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
@@ -17,16 +15,3 @@ services:
         sync: false
       - key: GROQ_MODEL
         value: openai/gpt-oss-120b
-      - key: ALLOWED_ORIGINS
-        sync: false
-      # Neon PostgreSQL connection string: chats are stored there, so they survive
-      # restarts and the free plan going to sleep. Paste it in the Render dashboard.
-      - key: DATABASE_URL
-        sync: false
-    # Without DATABASE_URL the app falls back to a SQLite file, which the free
-    # plan wipes on every deploy and restart. (Alternative to Neon, paid plan only:)
-    # disk:
-    #   name: chat-data
-    #   mountPath: /var/data
-    #   sizeGB: 1
-    # and add an env var SQLITE_PATH=/var/data/chat.db

@@ -1,9 +1,11 @@
 import json
 from contextlib import asynccontextmanager
 from uuid import UUID, uuid4
-from fastapi import FastAPI, HTTPException, Response
+from pathlib import Path
+from fastapi import FastAPI, HTTPException, Request, Response
+from fastapi.responses import FileResponse, StreamingResponse
+from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import StreamingResponse
 from pydantic import ValidationError
 from app.config import ALLOWED_ORIGINS, ARCHIVE_RETENTION_DAYS, GROQ_API_KEY, GROQ_MODEL
 from app.schemas.ingestion import IngestionRequest, RenameRequest
@@ -26,9 +28,14 @@ app = FastAPI(title="Indigo.ai API", description="AI-powered message analysis an
 # Only the frontends listed in ALLOWED_ORIGINS (backend/.env or Render settings) may call the API.
 app.add_middleware(CORSMiddleware, allow_origins=ALLOWED_ORIGINS, allow_credentials=False, allow_methods=["GET", "POST", "PATCH", "DELETE"], allow_headers=["Content-Type"])
 
+DIST_DIR = Path(__file__).resolve().parents[2] / "frontend-react" / "dist"
+
 @app.get("/")
-def root():
+def root(request: Request):
     """Public landing response: confirms the service is up without listing the API."""
+    accept = request.headers.get("accept", "")
+    if "text/html" in accept and not accept.startswith("*/*") and (DIST_DIR / "index.html").exists():
+        return FileResponse(DIST_DIR / "index.html")
     return {"service": app.title, "status": "running"}
 
 @app.get("/health")
@@ -197,3 +204,18 @@ def analyze_stream(request: IngestionRequest):
         media_type="application/x-ndjson",
         headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
     )
+
+# Serve frontend static assets & SPA catch-all for single-service deployment
+if (DIST_DIR / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
+
+@app.get("/{full_path:path}")
+def serve_spa(full_path: str):
+    if full_path.startswith("api/") or full_path == "health":
+        raise HTTPException(status_code=404, detail="Not found")
+    target = DIST_DIR / full_path
+    if target.is_file():
+        return FileResponse(target)
+    if (DIST_DIR / "index.html").exists():
+        return FileResponse(DIST_DIR / "index.html")
+    raise HTTPException(status_code=404, detail="Not found")
