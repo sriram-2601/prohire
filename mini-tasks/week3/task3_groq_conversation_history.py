@@ -16,7 +16,7 @@ if BACKEND_ENV.exists():
 else:
     load_dotenv()
 
-DEFAULT_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+DEFAULT_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 
 
@@ -71,8 +71,9 @@ def run_conversation_memory_demo(api_key: str | None = None, model: str | None =
         )
 
         reply = response.choices[0].message.content.strip()
+        safe_reply = reply.encode("ascii", errors="replace").decode("ascii")
         print("\n[OK] Assistant Context-Aware Reply:")
-        print(f"    \"{reply}\"")
+        print(f"    \"{safe_reply}\"")
         print("\n[OK] The model successfully resolved 'the first one' to Order #A100 (MacBook Pro)!")
         return True
 

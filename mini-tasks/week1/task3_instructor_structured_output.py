@@ -18,7 +18,7 @@ if BACKEND_ENV.exists():
 else:
     load_dotenv()
 
-DEFAULT_MODEL = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+DEFAULT_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-120b")
 API_KEY = os.getenv("GROQ_API_KEY", "").strip()
 
 

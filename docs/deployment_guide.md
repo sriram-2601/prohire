@@ -65,3 +65,4 @@ This guide covers deploying the **Indigo.ai / Enterprise Structured Ingestion Fi
 - [ ] Verify the LLM response streams in formatted Markdown.
 - [ ] Ask a follow-up: *"Can I get a replacement instead?"* to verify conversation memory.
 - [ ] Check Supabase table editor to verify conversation and message rows are persisted in PostgreSQL.
+
